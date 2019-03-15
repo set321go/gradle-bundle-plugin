@@ -1,7 +1,6 @@
 package org.dm.gradle.plugins.bundle
 
 import spock.lang.Shared
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
