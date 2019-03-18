@@ -1,11 +1,10 @@
 buildscript {
     repositories {
         mavenCentral()
-
         mavenLocal()
     }
     dependencies {
-        classpath 'org.dm.gradle:gradle-bundle-plugin:0.10.1-SNAPSHOT'
+        classpath 'org.dm.gradle:gradle-bundle-plugin:PLUGIN_VERSION'
     }
 }
 apply plugin: 'org.dm.bundle'

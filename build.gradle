@@ -23,6 +23,8 @@ repositories {
 
 sourceSets {
     integTest {
+        compileClasspath += sourceSets.main.output + configurations.testCompile
+        runtimeClasspath += output + compileClasspath + configurations.testRuntime
         groovy.srcDir file('src/integTest/groovy')
         resources.srcDir file('src/integTest/resources')
     }
@@ -30,18 +32,15 @@ sourceSets {
 
 tasks.matching { it.name ==~ /compile\w*/ }*.options*.encoding = 'UTF-8'
 
-// Write the plugin's classpath to a file to share with the tests
-//task createClasspathManifest {
-//    def outputDir = file("$buildDir/$name")
-//
-//    inputs.files sourceSets.main.runtimeClasspath
-//    outputs.dir outputDir
-//
-//    doLast {
-//        outputDir.mkdirs()
-//        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
-//    }
-//}
+task createIntegTestProps {
+    def outputDir = file("$buildDir/$name")
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+        file("$outputDir/jar-test.properties").text = "version=${project.version}"
+    }
+}
 
 dependencies {
     compile gradleApi()
@@ -57,22 +56,22 @@ dependencies {
     testRuntime 'cglib:cglib-nodep:3.2.4'
 
     integTestCompile gradleTestKit()
-    integTestCompile sourceSets.main.output
-    integTestCompile configurations.testCompile
-//    integTestRuntime files(createClasspathManifest)
-    integTestRuntime configurations.testRuntime
+    integTestRuntime files(createIntegTestProps)
 }
 
-task integTest(type: Test, dependsOn: classes) {
+task integTest(type: Test) {
+    description = 'Runs the integration tests.'
+    group = 'verification'
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
     reports.html.destination = file("$buildDir/reports/integTests")
     reports.junitXml.destination = file("$buildDir/integTest-results")
     binResultsDir = file("${reports.junitXml.destination}/binary/integTest")
+    outputs.upToDateWhen { false }
+    mustRunAfter test
 }
 
 check.dependsOn integTest
-
 
 jar {
     manifest {

@@ -6,6 +6,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
+import static org.dm.gradle.plugins.bundle.Utils.copyAndReplaceBuildFile
 import static org.dm.gradle.plugins.bundle.Utils.copyFile
 import static org.dm.gradle.plugins.bundle.Utils.createSources
 import static org.dm.gradle.plugins.bundle.Utils.getFileContentFromJar
@@ -19,7 +20,7 @@ class BundlePluginRegressionTestKitSpec extends Specification {
 
     def setup() {
         createSources(testProjectDir.root)
-        buildFile = copyFile(testProjectDir.root, 'build.gradle', 'src/integTest/resources/build.test')
+        buildFile = copyAndReplaceBuildFile(testProjectDir.root)
         copyFile(testProjectDir.root, 'src/main/java/org/foo/bar/TestActivator.java', 'src/integTest/resources/org/foo/bar/TestActivator.java')
         testProjectDir.newFile('src/main/java/org/foo/bar/More.java') << 'package org.foo.bar;\n class More {}'
     }

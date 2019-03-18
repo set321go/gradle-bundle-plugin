@@ -37,3 +37,19 @@ static File copyFile(File projectRoot, String filename, String filePath) {
     file << new File(filePath).text
     file
 }
+
+static File copyAndReplaceBuildFile(File projectRoot) {
+    def pluginPropsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("jar-test.properties")
+    if (pluginPropsStream == null) {
+        throw new IllegalStateException("Did not find plugin classpath resource, run `testClasses` build task.")
+    }
+
+    Properties props = new Properties()
+    props.load(pluginPropsStream)
+    String jarVersion = props.get("version")
+
+    def source = new File('src/integTest/resources/build.test')
+    def dest = new File(projectRoot, 'build.gradle')
+    dest << source.text.replaceAll('PLUGIN_VERSION', "${jarVersion}")
+    dest
+}
