@@ -3,10 +3,10 @@ package org.dm.gradle.plugins.bundle
 import aQute.bnd.osgi.Builder
 import aQute.bnd.osgi.Jar
 import org.gradle.api.GradleException
-import org.gradle.api.Nullable
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import javax.annotation.Nullable
 import java.util.jar.Manifest
 
 import static aQute.bnd.osgi.Constants.INCLUDERESOURCE

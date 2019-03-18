@@ -1,5 +1,6 @@
 package org.dm.gradle.plugins.bundle
 
+import org.gradle.api.Action
 import org.gradle.api.java.archives.Attributes
 import org.gradle.api.java.archives.Manifest
 import org.gradle.api.java.archives.internal.ManifestInternal
@@ -83,5 +84,10 @@ class ManifestSubstitute implements ManifestInternal {
     @Override
     Manifest from(Object mergePath, Closure closure) {
         return wrapped.from(mergePath, closure)
+    }
+
+    @Override
+    Manifest from(Object mergePath, Action action) {
+        return wrapped.from(mergePath, action)
     }
 }

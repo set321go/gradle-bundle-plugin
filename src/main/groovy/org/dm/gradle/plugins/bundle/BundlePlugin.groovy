@@ -17,7 +17,7 @@ class BundlePlugin implements Plugin<Project> {
      * {@inheritDoc}
      */
     @Override
-    public void apply(Project project) {
+    void apply(Project project) {
         project.extensions.create("bundle", BundleExtension)
 
         project.plugins.apply(JavaBasePlugin)
@@ -29,9 +29,9 @@ class BundlePlugin implements Plugin<Project> {
                 def jarBuilderFactory = new JarBuilderFactoryDecorator(
                         jarTask, project.bundle.jarBuilderFactory)
 
-                deleteAllActions()
-                doLast(new BundleGenerator(jarBuilderFactory))
-                manifest = new ManifestSubstitute(jarBuilderFactory, manifest)
+                jarTask.getTaskActions().clear()
+                jarTask.doLast(new BundleGenerator(jarBuilderFactory))
+                jarTask.manifest = new ManifestSubstitute(jarBuilderFactory, jarTask.manifest)
             }
         }
     }

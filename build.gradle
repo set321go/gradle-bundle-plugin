@@ -51,7 +51,7 @@ dependencies {
     testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    testCompile "org.codehaus.groovy:groovy-all:${project.hasProperty('groovy.version') ? project.getProperty('groovy.version') : '2.4.15'}"
+    testCompile "org.codehaus.groovy:groovy-all:${project.hasProperty('groovy.version') ? project.getProperty('groovy.version') : '2.5.4'}"
 
     testRuntime 'cglib:cglib-nodep:3.2.4'
 
