@@ -4,6 +4,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import spock.lang.Shared
 import spock.lang.Specification
 
 import static org.dm.gradle.plugins.bundle.Utils.copyAndReplaceBuildFile
@@ -12,15 +13,23 @@ import static org.dm.gradle.plugins.bundle.Utils.createSources
 import static org.dm.gradle.plugins.bundle.Utils.getFileContentFromJar
 import static org.dm.gradle.plugins.bundle.Utils.getJarFile
 import static org.dm.gradle.plugins.bundle.Utils.getResourceDir
+import static org.dm.gradle.plugins.bundle.Utils.loadTestProps
 
 class BundlePluginRegressionTestKitSpec extends Specification {
     @Rule TemporaryFolder testProjectDir = new TemporaryFolder()
+    @Shared List<String> gradleVersions
+    @Shared Properties testProps
     File buildFile
     String version = ''
 
+    def setupSpec() {
+        testProps = loadTestProps()
+        gradleVersions = testProps.getProperty('gradleVersions').split(',')
+    }
+
     def setup() {
         createSources(testProjectDir.root)
-        buildFile = copyAndReplaceBuildFile(testProjectDir.root)
+        buildFile = copyAndReplaceBuildFile(testProjectDir.root, testProps)
         copyFile(testProjectDir.root, 'src/main/java/org/foo/bar/TestActivator.java', 'src/integTest/resources/org/foo/bar/TestActivator.java')
         testProjectDir.newFile('src/main/java/org/foo/bar/More.java') << 'package org.foo.bar;\n class More {}'
     }

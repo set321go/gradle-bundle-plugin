@@ -14,26 +14,29 @@ import static org.dm.gradle.plugins.bundle.Utils.createSources
 import static org.dm.gradle.plugins.bundle.Utils.getFileContentFromJar
 import static org.dm.gradle.plugins.bundle.Utils.getJarFile
 import static org.dm.gradle.plugins.bundle.Utils.getResourceDir
+import static org.dm.gradle.plugins.bundle.Utils.loadTestProps
 
 class BundlePluginTestKitSpec extends Specification {
     @Rule TemporaryFolder testProjectDir = new TemporaryFolder()
     @Shared List<String> gradleVersions
+    @Shared Properties testProps
     File buildFile
     String version = ''
 
     def setupSpec() {
-        gradleVersions = ['3.2.1']
+        testProps = loadTestProps()
+        gradleVersions = testProps.getProperty('gradleVersions').split(',')
     }
 
     def setup() {
         createSources(testProjectDir.root)
-        buildFile = copyAndReplaceBuildFile(testProjectDir.root)
+        buildFile = copyAndReplaceBuildFile(testProjectDir.root, testProps)
         copyFile(testProjectDir.root, 'src/main/java/org/foo/bar/TestActivator.java', 'src/integTest/resources/org/foo/bar/TestActivator.java')
         testProjectDir.newFile('src/main/java/org/foo/bar/More.java') << 'package org.foo.bar;\n class More {}'
     }
 
     @Unroll
-    def "Jar task is executed while build"() {
+    def "Jar task is executed while build [#gradleVersion]"() {
         when:
         def result = GradleRunner.create()
                 .withGradleVersion(gradleVersion)
@@ -49,7 +52,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Includes project output class files by default"() {
+    def "Includes project output class files by default [#gradleVersion]"() {
         when:
         def result = GradleRunner.create()
                 .withGradleVersion(gradleVersion)
@@ -65,7 +68,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Includes project resources by default"() {
+    def "Includes project resources by default [#gradleVersion]"() {
         setup:
         def resources = new File(getResourceDir(testProjectDir.root),'org/foo/bar')
         resources.mkdirs()
@@ -88,7 +91,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Includes project sources if instructed"() {
+    def "Includes project sources if instructed [#gradleVersion]"() {
         setup:
         buildFile.append '\nbundle { instructions << ["-sources": true] }'
         when:
@@ -106,7 +109,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Uses bundle instructions"() {
+    def "Uses bundle instructions [#gradleVersion]"() {
         when:
         def result = GradleRunner.create()
                 .withGradleVersion(gradleVersion)
@@ -122,7 +125,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Uses project version as 'Bundle-Version' by default"() {
+    def "Uses project version as 'Bundle-Version' by default [#gradleVersion]"() {
         setup:
         version = '1.0.2'
         buildFile.append "\nversion = \"$version\""
@@ -141,7 +144,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Overwrites project version using 'Bundle-Version' instruction"() {
+    def "Overwrites project version using 'Bundle-Version' instruction [#gradleVersion]"() {
         setup:
         version = '1.0.2'
         buildFile.append '\nversion = "1.0.2"\nbundle { instructions << ["Bundle-Version": "5.0"] }'
@@ -160,7 +163,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Uses jar manifest values"() {
+    def "Uses jar manifest values [#gradleVersion]"() {
         setup:
         buildFile.append '\njar { manifest { attributes("Built-By": "abc") } }'
         when:
@@ -178,7 +181,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Overwrites jar manifest values"() {
+    def "Overwrites jar manifest values [#gradleVersion]"() {
         setup:
         buildFile.append '\njar { manifest { attributes("Built-By": "abc") } }\nbundle { instructions << ["Built-By": "xyz"] }'
         when:
@@ -196,7 +199,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Uses baseName and extension defined in jar task"() {
+    def "Uses baseName and extension defined in jar task [#gradleVersion]"() {
         setup:
         buildFile.append'\njar { baseName = "xyz"\nextension = "baz" }'
         when:
@@ -214,7 +217,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Ignores unknown attributes"() {
+    def "Ignores unknown attributes [#gradleVersion]"() {
         setup:
         buildFile.append '\nbundle { instructions << ["junk": "xyz"] }'
         when:
@@ -231,7 +234,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Supports old OSGI plugin instruction format"() {
+    def "Supports old OSGI plugin instruction format [#gradleVersion]"() {
         setup:
         buildFile.append '\nbundle { instruction "Built-By", "ab", "c"\ninstruction "Built-By", "x", "y", "z" }'
         when:
@@ -249,7 +252,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Displays builder classpath"() {
+    def "Displays builder classpath [#gradleVersion]"() {
         when:
         def result = GradleRunner.create()
                 .withGradleVersion(gradleVersion)
@@ -265,7 +268,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Displays errors"() {
+    def "Displays errors [#gradleVersion]"() {
         setup:
         buildFile.append '\nbundle { instructions << ["Bundle-Activator": "org.foo.bar.NotExistingActivator"] }'
         when:
@@ -283,7 +286,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Can trace bnd build process"() {
+    def "Can trace bnd build process [#gradleVersion]"() {
         setup:
         buildFile.append '\nbundle { trace = true }'
         when:
@@ -301,7 +304,7 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "jar task actions contain only a bundle generator action"() {
+    def "jar task actions contain only a bundle generator action [#gradleVersion]"() {
         setup:
         buildFile.append "task actionscheck { doLast { println jar.actions.size() + \" \" + jar.actions[0].@action.getClass().getSimpleName() } }"
         when:
