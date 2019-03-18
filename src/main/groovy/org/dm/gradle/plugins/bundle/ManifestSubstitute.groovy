@@ -32,7 +32,7 @@ class ManifestSubstitute implements ManifestInternal {
 
     @Override
     void setContentCharset(String name) {
-        charset = Charset.forName(name);
+        charset = Charset.forName(name)
     }
 
     @Override
@@ -41,13 +41,6 @@ class ManifestSubstitute implements ManifestInternal {
             manifest.mainAttributes.remove(new java.util.jar.Attributes.Name(BND_LASTMODIFIED))
         }
         return this
-    }
-
-    /* Manifest implementation */
-
-    @Override
-    Manifest writeTo(Writer writer) {
-        return writeTo(new WriterToOutputStreamAdapter(writer, charset))
     }
 
     /* Delegated methods, nothing interesting */

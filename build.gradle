@@ -51,7 +51,7 @@ dependencies {
     testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    testCompile "org.codehaus.groovy:groovy-all:${project.hasProperty('groovy.version') ? project.getProperty('groovy.version') : '2.4.10'}"
+    testCompile "org.codehaus.groovy:groovy-all:${project.hasProperty('groovy.version') ? project.getProperty('groovy.version') : '2.4.15'}"
 
     testRuntime 'cglib:cglib-nodep:3.2.4'
 
@@ -62,7 +62,7 @@ dependencies {
 task integTest(type: Test) {
     description = 'Runs the integration tests.'
     group = 'verification'
-    testClassesDir = sourceSets.integTest.output.classesDir
+    testClassesDirs = sourceSets.integTest.output.classesDirs
     classpath = sourceSets.integTest.runtimeClasspath
     reports.html.destination = file("$buildDir/reports/integTests")
     reports.junitXml.destination = file("$buildDir/integTest-results")
@@ -70,8 +70,6 @@ task integTest(type: Test) {
     outputs.upToDateWhen { false }
     mustRunAfter test
 }
-
-check.dependsOn integTest
 
 jar {
     manifest {
@@ -183,8 +181,4 @@ eclipse.classpath.file {
     whenMerged { cp ->
         cp.entries.removeAll { (it.kind == "src") && (it.path =~ /resources/) }
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.2.1'
 }
