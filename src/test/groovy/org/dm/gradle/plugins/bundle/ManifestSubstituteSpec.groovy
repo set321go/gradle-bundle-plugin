@@ -2,6 +2,7 @@ package org.dm.gradle.plugins.bundle
 
 import org.codehaus.groovy.control.io.NullWriter
 import org.gradle.api.java.archives.Manifest
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class ManifestSubstituteSpec extends Specification {
@@ -17,6 +18,7 @@ class ManifestSubstituteSpec extends Specification {
         jarBuilder = Mock(JarBuilder)
     }
 
+    @Ignore("This method was removed in 4.x so this test should no longer be needed")
     def "Redirects writeTo for Writer"() {
         when:
         substitute.writeTo(NullWriter.DEFAULT)
