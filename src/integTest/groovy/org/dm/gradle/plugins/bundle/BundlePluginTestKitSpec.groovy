@@ -286,24 +286,6 @@ class BundlePluginTestKitSpec extends Specification {
     }
 
     @Unroll
-    def "Can trace bnd build process [#gradleVersion]"() {
-        setup:
-        buildFile.append '\nbundle { trace = true }'
-        when:
-        def result = GradleRunner.create()
-                .withGradleVersion(gradleVersion)
-                .withProjectDir(testProjectDir.root)
-                .withArguments('jar', '-i')
-                .build()
-
-        then:
-        result.task(":jar").outcome == TaskOutcome.SUCCESS
-        result.output =~ /(?m)begin DSAnnotations$/
-        where:
-        gradleVersion << gradleVersions
-    }
-
-    @Unroll
     def "jar task actions contain only a bundle generator action [#gradleVersion]"() {
         setup:
         buildFile.append "task actionscheck { doLast { println jar.actions.size() + \" \" + jar.actions[0].@action.getClass().getSimpleName() } }"
